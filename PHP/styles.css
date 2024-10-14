@@ -1,0 +1,18 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #333;
+}
+
+.card {
+    margin-bottom: 20px;
+}
+
+footer {
+    background-color: #2f465e;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
