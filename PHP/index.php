@@ -78,7 +78,7 @@
         </div>
     </div>
 
-    <footer class="bg-light text-center py-4">
+    <footer class="bg-Primary text-center py-4">
         <p>&copy; 2024 Mvp games. All rights reserved.</p>
     </footer>
 
