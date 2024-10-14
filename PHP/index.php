@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aternos-like Page</title>
+    <title>Mvp Games</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Aternos Clone</a>
+        <a class="navbar-brand" href="#">Mvp Games</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -32,8 +32,8 @@
     </nav>
 
     <div class="container mt-5">
-        <h1 class="text-center">Welcome to Aternos Clone</h1>
-        <p class="text-center">Your free Minecraft server hosting solution.</p>
+        <h1 class="text-center">Welcome</h1>
+        <p class="text-center">Your free Game server hosting solution.</p>
 
         <div class="text-center mb-4">
             <form method="POST" action="">
@@ -79,7 +79,7 @@
     </div>
 
     <footer class="bg-light text-center py-4">
-        <p>&copy; 2024 Aternos Clone. All rights reserved.</p>
+        <p>&copy; 2024 Mvp games. All rights reserved.</p>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
