@@ -11,12 +11,15 @@ h1 {
 }
 
 footer {
-    background-color: hsl(278, 32%, 27%);
+    background-color: hsl(278, 33%, 26%) !important;
     position: relative;
     bottom: 0;
     width: 100%;
 }
--btn-primary{
-    background-color: hsl(278, 32%, 27%);
-    border-color: hsl(278, 32%, 27%);
+.btn-primary {
+    background-color: hsl(0, 0%, 0%);
+}
+.bg-light {
+    color: hsl(0, 0%, 100%);
+    
 }
