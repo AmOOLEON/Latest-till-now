@@ -16,3 +16,7 @@ footer {
     bottom: 0;
     width: 100%;
 }
+-btn-primary{
+    background-color: hsl(278, 32%, 27%);
+    border-color: hsl(278, 32%, 27%);
+}
