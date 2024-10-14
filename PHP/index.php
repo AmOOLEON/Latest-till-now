@@ -37,7 +37,7 @@
 
         <div class="text-center mb-4">
             <form method="POST" action="">
-                <input type="number" name="cardCount" placeholder="Enter number of squares" min="1" max="10" class="form-control d-inline-block" style="width: 200px;" required>
+                <input type="number" name="cardCount" placeholder="Enter number of squares" min="1" max="21" class="form-control d-inline-block" style="width: 200px;" required>
                 <button type="submit" class="btn btn-primary">Generate Cards</button>
             </form>
         </div>
@@ -45,26 +45,21 @@
         <div id="features" class="row">
             <?php
             // Define an array of features
-            $features = [
-                ["title" => "Feature 1", "description" => "Description of feature 1.", "image" => "https://via.placeholder.com/150"],
-                ["title" => "Feature 2", "description" => "Description of feature 2.", "image" => "https://via.placeholder.com/150"],
-                ["title" => "Feature 3", "description" => "Description of feature 3.", "image" => "https://via.placeholder.com/150"],
-                ["title" => "Feature 4", "description" => "Description of feature 4.", "image" => "https://via.placeholder.com/150"],
-                ["title" => "Feature 5", "description" => "Description of feature 5.", "image" => "https://via.placeholder.com/150"],
-                ["title" => "Feature 6", "description" => "Description of feature 6.", "image" => "https://via.placeholder.com/150"],
-                ["title" => "Feature 7", "description" => "Description of feature 7.", "image" => "https://via.placeholder.com/150"],
-                ["title" => "Feature 8", "description" => "Description of feature 8.", "image" => "https://via.placeholder.com/150"],
-                ["title" => "Feature 9", "description" => "Description of feature 9.", "image" => "https://via.placeholder.com/150"],
-                ["title" => "Feature 10", "description" => "Description of feature 10.", "image" => "https://via.placeholder.com/150"],
-            ];
+           
 
             // Check if form is submitted
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $count = intval($_POST['cardCount']);
-                $count = max(1, min($count, 10)); // Ensure count is between 1 and 10
+                //$count = max(1, min($count, 10)); // Ensure count is between 1 and 10
 
                 // Generate cards based on user input
                 for ($i = 0; $i < $count; $i++) {
+                    $t=$i+1;
+                    $features[] = [
+                        "title" => "Feature " . $t,
+                        "description" => "Description of feature " . $t . ".",
+                        "image" => "https://via.placeholder.com/150?text=Feature+" . $t // Example image with text
+                    ];
                     if (isset($features[$i])) {
                         echo '
                         <div class="col-md-4">
