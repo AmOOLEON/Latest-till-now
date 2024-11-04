@@ -1,46 +1,24 @@
-<!-- process_login.php -->
-<?php
-/*session_start();
-if (isset($_SESSION['username'])) {
-    header("Location: index.php"); // Redirect if already logged in
-    exit();
-}
-?>
+<!-- login.php -->
+<?php include 'header.php'; ?>
 
-<?php
-session_start();
-include 'db.php';
+<div class="container mt-5">
+    <h2 class="text-center">Login</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="POST" action="process_login.php">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                <p class="text-center mt-3">Don't have an account? <a href="signup.php">Sign up here</a>.</p>
+            </form>
+        </div>
+    </div>
+</div>
 
-$username = $_POST['username'];
-$password = $_POST['password'];
-
-// Retrieve the user from the database
-$stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-$stmt->execute([$username]);
-$user = $stmt->fetch();
-
-if ($user && password_verify($password, $user['password'])) {
-    // Password is correct, start a session
-    $_SESSION['username'] = $user['username'];
-    header("Location: index.php"); // Redirect to home page after login
-    exit();
-} else {
-    echo "Invalid username or password. <a href='login.php'>Try again</a>";
-}*/
-?>
-<!-- process_login.php -->
-<?php
-session_start();
-
-// Placeholder code for demonstration
-$username = $_POST['username'];
-$password = $_POST['password'];
-
-// Replace this with database verification
-if ($username === 'user' && $password === 'pass') {
-    $_SESSION['username'] = $username;
-    header("Location: index.php"); // Redirect to home page after login
-} else {
-    echo "Invalid credentials. <a href='login.php'>Try again</a>";
-}
-?>
+<?php include 'footer.php'; ?>

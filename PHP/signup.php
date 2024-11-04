@@ -1,51 +1,28 @@
-<!-- process_signup.php -->
-<?php
-session_start();
-if (isset($_SESSION['username'])) {
-    header("Location: index.php"); // Redirect if already logged in
-    exit();
-}
-?>
+<!-- signup.php -->
+<?php include 'header.php'; ?>
 
-<?php
-/*include 'db.php';
+<div class="container mt-5">
+    <h2 class="text-center">Sign Up</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="POST" action="process_signup.php">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                <p class="text-center mt-3">Already have an account? <a href="login.php">Login here</a>.</p>
+            </form>
+        </div>
+    </div>
+</div>
 
-$username = $_POST['username'];
-$email = $_POST['email'];
-$password = $_POST['password'];
-
-// Check if username or email already exists
-$stmt = $pdo->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
-$stmt->execute([$username, $email]);
-$user = $stmt->fetch();
-
-if ($user) {
-    echo "Username or email already exists. <a href='signup.php'>Try again</a>";
-} else {
-    // Hash the password for security
-    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-
-    // Insert the new user into the database
-    $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-    if ($stmt->execute([$username, $email, $hashed_password])) {
-        echo "Registration successful. <a href='login.php'>Login</a>";
-    } else {
-        echo "Error during registration. <a href='signup.php'>Try again</a>";
-    }
-}*/
-?>
-<!-- process_signup.php -->
-<?php
-// Placeholder code for demonstration
-$username = $_POST['username'];
-$email = $_POST['email'];
-$password = $_POST['password'];
-
-// You would typically save this data to a database after hashing the password
-// Example (please replace with actual database code):
-// $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-// Database insertion code goes here
-
-echo "Registration successful. <a href='login.php'>Login</a>";
-?>
-
+<?php include 'footer.php'; ?>
