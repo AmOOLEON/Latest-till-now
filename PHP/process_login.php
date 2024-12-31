@@ -25,7 +25,8 @@ if ($user && password_verify($password, $user['password'])) {
     header("Location: index.php"); // Redirect to home page after login
     exit();
 } else {
-    echo "Invalid username or password. <a href='login.php'>Try again</a>";
+    $_SESSION['message'] = 'Invalid username or pasword try again!'; // success message
+    header("Location: login.php");
 }
 ?>
 

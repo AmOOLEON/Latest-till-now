@@ -7,8 +7,6 @@
 
         <div id="features" class="row">
     <?php
-    include 'db.php';
-
     // Fetch cards from the database
     $stmt = $pdo->query("SELECT * FROM cards");
     while ($row = $stmt->fetch()) {

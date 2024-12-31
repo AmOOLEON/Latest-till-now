@@ -1,7 +1,5 @@
 <?php include 'header.php'; ?>
 <?php
-include 'db.php';
-//session_start();
 
 // Redirect non-admin users
 if (!isset($_SESSION['username'])) {

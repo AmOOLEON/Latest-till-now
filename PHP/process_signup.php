@@ -20,7 +20,8 @@ $stmt->execute([$username, $email]);
 $user = $stmt->fetch();
 
 if ($user) {
-    echo "Username or email already exists. <a href='signup.php'>Try again</a>";
+    $_SESSION['message'] = 'Username or Email already exists try again'; // Error message
+    header("Location: signup.php");
 } else {
     // Hash the password for security
     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
@@ -28,9 +29,11 @@ if ($user) {
     // Insert the new user into the database
     $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
     if ($stmt->execute([$username, $email, $hashed_password])) {
-        echo "Registration successful. <a href='login.php'>Login</a>";
+        $_SESSION['message'] = 'Registration successful!'; // success message
+    header("Location: login.php");
     } else {
-        echo "Error during registration. <a href='signup.php'>Try again</a>";
+        $_SESSION['message'] = 'Error during registeration'; // Error message
+    header("Location: signup.php");
     }
 }
 ?>

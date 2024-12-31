@@ -1,18 +1,15 @@
-<?php include 'header.php'; ?>
-<?php if (isset($_GET['message'])): ?>
-    <div class="alert alert-success">
-        <?= htmlspecialchars($_GET['message']) ?>
-    </div>
-<?php endif; ?>
+<?php include 'header.php';?>
+<?php 
+if (isset($_GET['message'])) { 
+    $_SESSION['message'] = $_GET['message'];
+    header("Refresh:1; url=control_panel.php");
+    unset($_GET['message']);
+}
+?>
 
-<?php if (isset($_GET['error'])): ?>
-    <div class="alert alert-danger">
-        <?= htmlspecialchars($_GET['error']) ?>
-    </div>
-<?php endif; ?>
 
 <?php
-include 'db.php';
+
 
 
 // Redirect non-logged-in users
@@ -33,7 +30,7 @@ if (!$user || !$user['is_admin']) {
 
 
 <?php
-include 'db.php';
+
 
 
 
@@ -48,6 +45,7 @@ if (isset($_GET['delete'])) {
     $id = intval($_GET['delete']);
     $stmt = $pdo->prepare("DELETE FROM cards WHERE id = ?");
     $stmt->execute([$id]);
+    $_SESSION['message'] = "Card deleted successfully";
     header("Location: control_panel.php");
     exit();
 }
@@ -60,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_card'])) {
 
     $stmt = $pdo->prepare("INSERT INTO cards (title, description, image) VALUES (?, ?, ?)");
     $stmt->execute([$title, $description, $image]);
+    $_SESSION['message'] = "Card added successfully";
     header("Location: control_panel.php");
     exit();
 }
@@ -73,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_card'])) {
 
     $stmt = $pdo->prepare("UPDATE cards SET title = ?, description = ?, image = ? WHERE id = ?");
     $stmt->execute([$title, $description, $image, $id]);
+    $_SESSION['message'] = "Card updated successfully";
     header("Location: control_panel.php");
     exit();
 }

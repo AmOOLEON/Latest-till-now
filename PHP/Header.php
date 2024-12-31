@@ -59,3 +59,16 @@ if ($is_logged_in) {
         </ul>
     </div>
 </nav>
+<?php
+if (isset($_SESSION['message'])):
+?>
+<div class="alert alert-<?= $_SESSION['message'] ?> alert-dismissible fade show text-center alert-bar" role="alert" style = "border : 0.5px solid black ; margin-left: 15%; margin-top: 0.5%; margin-right: 15%; border-radius: 4px; color: black; background-color:rgba(247, 0, 21, 0.09); border-color:rgb(100, 2, 12);">
+    <?= htmlspecialchars($_SESSION['message']); ?>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<?php
+unset($_SESSION['message']); // Clear the message after displaying it
+endif;
+?>
