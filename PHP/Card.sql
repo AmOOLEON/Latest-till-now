@@ -1,6 +1,8 @@
+
 CREATE TABLE cards (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(100) NOT NULL,
+    title VARCHAR(255) UNIQUE NOT NULL,
     description TEXT NOT NULL,
+    content TEXT NOT NULL,
     image VARCHAR(255) DEFAULT NULL
 );

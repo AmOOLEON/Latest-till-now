@@ -31,7 +31,7 @@ if (!$user || !$user['is_admin']) {
 
 <?php
 
-
+$imageUploadDir = 'uploads/';
 
 
 // Check if user is logged in (optional)
@@ -41,38 +41,70 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Handle delete request
-if (isset($_GET['delete'])) {
-    $id = intval($_GET['delete']);
+if (isset($_GET['delete_id'])) {
+    $id = $_GET['delete_id'];
+
     $stmt = $pdo->prepare("DELETE FROM cards WHERE id = ?");
     $stmt->execute([$id]);
-    $_SESSION['message'] = "Card deleted successfully";
+
+    $_SESSION['message'] = "Card deleted successfully!";
     header("Location: control_panel.php");
     exit();
 }
 
-// Handle add card request
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_card'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
     $title = $_POST['title'];
     $description = $_POST['description'];
-    $image = $_POST['image'];
+    $content = $_POST['content'];
 
-    $stmt = $pdo->prepare("INSERT INTO cards (title, description, image) VALUES (?, ?, ?)");
-    $stmt->execute([$title, $description, $image]);
-    $_SESSION['message'] = "Card added successfully";
+    // Handle image upload
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $imageTmpPath = $_FILES['image']['tmp_name'];
+        $imageName = basename($_FILES['image']['name']);
+        $imagePath = $imageUploadDir . $imageName;
+
+        // Move the uploaded file to the target directory
+        if (move_uploaded_file($imageTmpPath, $imagePath)) {
+            // Insert the card into the database
+            $stmt = $pdo->prepare("INSERT INTO cards (title, description, content, image) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$title, $description, $content, $imagePath]);
+
+            $_SESSION['message'] = "Card added successfully!";
+        } else {
+            $_SESSION['message'] = "Failed to upload image.";
+        }
+    } else {
+        $_SESSION['message'] = "Image upload failed. Please try again.";
+    }
+
     header("Location: control_panel.php");
     exit();
 }
 
-// Handle edit card request
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_card'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit') {
     $id = $_POST['id'];
     $title = $_POST['title'];
     $description = $_POST['description'];
-    $image = $_POST['image'];
+    $content = $_POST['content'];
+    $imagePath = $_POST['current_image']; // Default to the existing image
 
-    $stmt = $pdo->prepare("UPDATE cards SET title = ?, description = ?, image = ? WHERE id = ?");
-    $stmt->execute([$title, $description, $image, $id]);
-    $_SESSION['message'] = "Card updated successfully";
+    // Handle image upload if a new file is provided
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $imageTmpPath = $_FILES['image']['tmp_name'];
+        $imageName = basename($_FILES['image']['name']);
+        $imagePath = $imageUploadDir . $imageName;
+
+        // Move the uploaded file to the target directory
+        if (!move_uploaded_file($imageTmpPath, $imagePath)) {
+            $_SESSION['message'] = "Failed to upload new image.";
+        }
+    }
+
+    // Update the card in the database
+    $stmt = $pdo->prepare("UPDATE cards SET title = ?, description = ?, content = ?, image = ? WHERE id = ?");
+    $stmt->execute([$title, $description, $content, $imagePath, $id]);
+
+    $_SESSION['message'] = "Card updated successfully!";
     header("Location: control_panel.php");
     exit();
 }
@@ -85,77 +117,109 @@ $cards = $stmt->fetchAll();
 
 
 <div class="container mt-5">
-    <h2>Control Panel</h2>
+        <h1 class="text-center">Control Panel</h1>
 
-    <!-- Add Card Form -->
-    <h4>Add New Card</h4>
-    <form method="POST" class="mb-5">
-        <input type="hidden" name="add_card" value="1">
-        <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" id="title" name="title" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" class="form-control" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="image">Image URL</label>
-            <input type="text" id="image" name="image" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-primary">Add Card</button>
-    </form>
+        <!-- Display success/error messages -->
+        <?php if (isset($_SESSION['message'])): ?>
+            <div class="alert alert-success">
+                <?= $_SESSION['message']; unset($_SESSION['message']); ?>
+            </div>
+        <?php endif; ?>
 
-    <!-- Cards Table -->
-    <h4>Manage Cards</h4>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Image</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($cards as $card): ?>
-            <tr>
-                <td><?php echo $card['id']; ?></td>
-                <td><?php echo htmlspecialchars($card['title']); ?></td>
-                <td><?php echo htmlspecialchars($card['description']); ?></td>
-                <td><img src="<?php echo htmlspecialchars($card['image']); ?>" alt="Image" style="width: 100px;"></td>
-                <td>
-                    <button class="btn btn-warning btn-sm" onclick="editCard(<?php echo $card['id']; ?>, '<?php echo htmlspecialchars($card['title']); ?>', '<?php echo htmlspecialchars($card['description']); ?>', '<?php echo htmlspecialchars($card['image']); ?>')">Edit</button>
-                    <a href="control_panel.php?delete=<?php echo $card['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-
-    <!-- Edit Card Form -->
-    <div id="editCardForm" class="mt-5" style="display: none;">
-        <h4>Edit Card</h4>
-        <form method="POST">
-            <input type="hidden" name="edit_card" value="1">
-            <input type="hidden" id="edit_id" name="id">
+        <!-- Add New Card -->
+        <h2>Add New Card</h2>
+        <form method="POST" enctype="multipart/form-data" class="mb-4">
+            <input type="hidden" name="action" value="add">
             <div class="form-group">
-                <label for="edit_title">Title</label>
-                <input type="text" id="edit_title" name="title" class="form-control" required>
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="edit_description">Description</label>
-                <textarea id="edit_description" name="description" class="form-control" required></textarea>
+                <label for="description">Short Description</label>
+                <textarea id="description" name="description" class="form-control" required></textarea>
             </div>
             <div class="form-group">
-                <label for="edit_image">Image URL</label>
-                <input type="text" id="edit_image" name="image" class="form-control">
+                <label for="content">Full Content</label>
+                <textarea id="content" name="content" class="form-control" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <div class="form-group">
+                <label for="image">Image</label>
+                <input type="file" id="image" name="image" class="form-control-file" required>
+            </div>
+            <button type="submit" class="btn btn-success">Add Card</button>
         </form>
+
+        <!-- List of Cards -->
+        <h2>Manage Cards</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($cards as $card): ?>
+                    <tr>
+                        <td><?= $card['id']; ?></td>
+                        <td><?= htmlspecialchars($card['title']); ?></td>
+                        <td><?= htmlspecialchars($card['description']); ?></td>
+                        <td>
+                            <!-- Edit Button -->
+                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editModal<?= $card['id']; ?>">Edit</button>
+
+                            <!-- Delete Button -->
+                            <a href="?delete_id=<?= $card['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this card?')">Delete</a>
+                        </td>
+                    </tr>
+
+                    <!-- Edit Modal -->
+                    <div class="modal fade" id="editModal<?= $card['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="editModalLabel<?= $card['id']; ?>" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <form method="POST" enctype="multipart/form-data">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editModalLabel<?= $card['id']; ?>">Edit Card</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="action" value="edit">
+                                        <input type="hidden" name="id" value="<?= $card['id']; ?>">
+                                        <input type="hidden" name="current_image" value="<?= $card['image']; ?>">
+                                        <div class="form-group">
+                                            <label for="title">Title</label>
+                                            <input type="text" id="title" name="title" class="form-control" value="<?= htmlspecialchars($card['title']); ?>" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="description">Short Description</label>
+                                            <textarea id="description" name="description" class="form-control" required><?= htmlspecialchars($card['description']); ?></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="content">Full Content</label>
+                                            <textarea id="content" name="content" class="form-control" required><?= htmlspecialchars($card['content']); ?></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="image">Image</label>
+                                            <input type="file" id="image" name="image" class="form-control-file">
+                                            <small>Leave empty to keep the current image</small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
-</div>
 
 <script>
 function editCard(id, title, description, image) {
@@ -163,6 +227,7 @@ function editCard(id, title, description, image) {
     document.getElementById('edit_id').value = id;
     document.getElementById('edit_title').value = title;
     document.getElementById('edit_description').value = description;
+    document.getElementById('edit_content').value = content;
     document.getElementById('edit_image').value = image;
     window.scrollTo(0, document.getElementById('editCardForm').offsetTop);
 }

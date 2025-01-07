@@ -7,21 +7,26 @@
 
         <div id="features" class="row">
     <?php
-    // Fetch cards from the database
-    $stmt = $pdo->query("SELECT * FROM cards");
-    while ($row = $stmt->fetch()) {
-        echo '
-        <div class="col-md-4">
-            <div class="card">
-                <img src="' . htmlspecialchars($row['image']) . '" class="card-img-top" alt="' . htmlspecialchars($row['title']) . '">
-                <div class="card-body">
-                    <h5 class="card-title">' . htmlspecialchars($row['title']) . '</h5>
-                    <p class="card-text">' . htmlspecialchars($row['description']) . '</p>
-                </div>
+ // Fetch cards from the database
+$stmt = $pdo->query("SELECT id, title, description, image FROM cards");
+$cards = $stmt->fetchAll();
+
+foreach ($cards as $card) {
+    $titleSlug = urlencode($card['title']); // Encode title for URL
+    echo '
+    <div class="col-md-4">
+        <div class="card">
+            <img src="' . $card['image'] . '" class="card-img-top" alt="' . htmlspecialchars($card['title']) . '">
+            <div class="card-body">
+                <h5 class="card-title">' . htmlspecialchars($card['title']) . '</h5>
+                <p class="card-text">' . htmlspecialchars($card['description']) . '</p>
+                <a href="card.php?title=' . $titleSlug . '" class="btn btn-primary">Read More...</a>
             </div>
-        </div>';
-    }
-    ?>
+        </div>
+    </div>';
+}
+?>
+    
 </div>
 
     </div>
