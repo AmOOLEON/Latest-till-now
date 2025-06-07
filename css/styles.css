@@ -57,3 +57,6 @@ footer {
 .navbar-brand{
     color: #ffff !important;
 }
+.font{
+     font-family: 'Georgia', 'Palatino Linotype', 'Times New Roman', serif;
+}

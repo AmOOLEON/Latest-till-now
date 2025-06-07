@@ -1,7 +1,7 @@
 <?php include 'Header.php'; ?>
     <div class="container mt-5">
         <h1 class="text-center">Welcome</h1>
-        <p class="text-center">Your free Game server hosting solution.</p>
+        <p class="text-center" >Here we got some crazy lores you need to explore!.</p>
 
         
 
