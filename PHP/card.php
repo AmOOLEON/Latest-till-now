@@ -37,7 +37,12 @@ if (isset($_GET['title'])) {
         $comments = $stmt->fetchAll();
 ?>
 <body>
+    
 <div class="container mt-5">
+    <?php if ($card['full_image']) {
+    echo '<img class="fullimage" src="' . htmlspecialchars($card['full_image']) . '" alt="Card Full Image" style="max-width: 100%; height: auto; margin-bottom: 20px;">';
+}
+?>
     <h1><?= htmlspecialchars($card['title']) ?></h1>
     <p><?= nl2br(htmlspecialchars($card['content'])) ?></p>
 
@@ -90,5 +95,8 @@ if (isset($_GET['title'])) {
 } else {
     echo '<p>Invalid request.</p>';
 }
+
+?>
+<?php
 include 'footer.php';
 ?>

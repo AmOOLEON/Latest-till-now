@@ -60,3 +60,7 @@ footer {
 .font{
      font-family: 'Georgia', 'Palatino Linotype', 'Times New Roman', serif;
 }
+.fullimage{
+    border-radius: 8px;
+    border-color: cornflowerblue;
+}

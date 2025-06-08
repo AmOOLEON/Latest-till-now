@@ -56,6 +56,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $title = $_POST['title'];
     $description = $_POST['description'];
     $content = $_POST['content'];
+    $fullImagePath = null;
+if (isset($_FILES['full_image']) && $_FILES['full_image']['error'] === UPLOAD_ERR_OK) {
+    $fullImageTmpPath = $_FILES['full_image']['tmp_name'];
+    $fullImageName = basename($_FILES['full_image']['name']);
+    $fullImagePath = $imageUploadDir . $fullImageName;
+
+    move_uploaded_file($fullImageTmpPath, $fullImagePath);
+}
 
     // Handle image upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -66,8 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         // Move the uploaded file to the target directory
         if (move_uploaded_file($imageTmpPath, $imagePath)) {
             // Insert the card into the database
-            $stmt = $pdo->prepare("INSERT INTO cards (title, description, content, image) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$title, $description, $content, $imagePath]);
+            $stmt = $pdo->prepare("INSERT INTO cards (title, description, content, image, full_image) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$title, $description, $content, $imagePath, $fullImagePath]);
+
 
             $_SESSION['message'] = "Card added successfully!";
         } else {
@@ -87,7 +96,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $description = $_POST['description'];
     $content = $_POST['content'];
     $imagePath = $_POST['current_image']; // Default to the existing image
+    $fullImagePath = $_POST['current_full_image']; // default
+if (isset($_FILES['full_image']) && $_FILES['full_image']['error'] === UPLOAD_ERR_OK) {
+    $fullImageTmpPath = $_FILES['full_image']['tmp_name'];
+    $fullImageName = basename($_FILES['full_image']['name']);
+    $fullImagePath = $imageUploadDir . $fullImageName;
 
+    if(!move_uploaded_file($fullImageTmpPath, $fullImagePath)){
+         $_SESSION['message'] = "Failed to upload new Full image.";
+    }
+}
     // Handle image upload if a new file is provided
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $imageTmpPath = $_FILES['image']['tmp_name'];
@@ -101,8 +119,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 
     // Update the card in the database
-    $stmt = $pdo->prepare("UPDATE cards SET title = ?, description = ?, content = ?, image = ? WHERE id = ?");
-    $stmt->execute([$title, $description, $content, $imagePath, $id]);
+    $stmt = $pdo->prepare("UPDATE cards SET title = ?, description = ?, content = ?, image = ?, full_image = ? WHERE id = ?");
+    $stmt->execute([$title, $description, $content, $imagePath, $fullImagePath, $id]);
 
     $_SESSION['message'] = "Card updated successfully!";
     header("Location: control_panel.php");
@@ -146,6 +164,11 @@ $cards = $stmt->fetchAll();
                 <label for="image">Image</label>
                 <input type="file" id="image" name="image" class="form-control-file" required>
             </div>
+            <div class="form-group">
+                <label for="full_image">Full Card Image</label>
+                <input type="file" id="full_image" name="full_image" class="form-control-file">
+            </div>
+
             <button type="submit" class="btn btn-success">Add Card</button>
         </form>
 
@@ -207,7 +230,14 @@ $cards = $stmt->fetchAll();
                                             <input type="file" id="image" name="image" class="form-control-file">
                                             <small>Leave empty to keep the current image</small>
                                         </div>
-                                    </div>
+                                        <div class="form-group">
+                                         <label for="full_image">Full Card Image</label>
+                                        <input type="file" id="full_image" name="full_image" class="form-control-file">
+                                        <small>Leave empty to keep current full image</small>
+                                        </div>
+                                        <input type="hidden" name="current_full_image" value="<?= $card['full_image']; ?>">
+
+                                    
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                         <button type="submit" class="btn btn-primary">Save Changes</button>
